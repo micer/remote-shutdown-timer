@@ -31,6 +31,7 @@
         </android.support.design.widget.AppBarLayout>
 
         <include
+            android:id="@+id/layout_content_main"
             layout="@layout/content_main"
             app:vm="@{vm}" />
 
