@@ -8,6 +8,10 @@
         <variable
             name="vm"
             type="cz.micr.remoteshutdowntimer.MainMVVM.ViewModel" />
+
+        <variable
+            name="activity"
+            type="cz.micr.remoteshutdowntimer.MainMVVM.View" />
     </data>
 
     <android.support.design.widget.CoordinatorLayout
@@ -33,6 +37,7 @@
         <include
             android:id="@+id/layout_content_main"
             layout="@layout/content_main"
+            app:activity="@{activity}"
             app:vm="@{vm}" />
 
         <android.support.design.widget.FloatingActionButton

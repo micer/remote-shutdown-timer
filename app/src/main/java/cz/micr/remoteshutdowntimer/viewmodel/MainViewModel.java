@@ -13,7 +13,7 @@ public class MainViewModel implements MainMVVM.ViewModel {
     private ObservableField<String> deviceName = new ObservableField<>("");
     private ObservableField<String> deviceIpAddress = new ObservableField<>("");
     private ObservableBoolean connectButtonEnabled = new ObservableBoolean(false);
-    private TextWatcher deviceIpTextWatcher;
+    private TextWatcher ipAddressTextWatcher;
     private TextWatcher passwordTextWatcher;
     @Inject
     public MainViewModel() {
@@ -35,13 +35,13 @@ public class MainViewModel implements MainMVVM.ViewModel {
     }
 
     @Override
-    public TextWatcher getDeviceIpTextWatcher() {
-        return deviceIpTextWatcher;
+    public TextWatcher getIpAddressTextWatcher() {
+        return ipAddressTextWatcher;
     }
 
     @Override
-    public void setDeviceIpTextWatcher(TextWatcher textWatcher) {
-        this.deviceIpTextWatcher = textWatcher;
+    public void setIpAddressTextWatcher(TextWatcher textWatcher) {
+        this.ipAddressTextWatcher = textWatcher;
     }
 
     @Override

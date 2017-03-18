@@ -6,12 +6,11 @@ import android.text.TextWatcher;
 
 public interface MainMVVM {
 
-    interface View {
-        void showError(CharSequence error);
+    interface Model {
     }
 
-    interface Model {
-
+    interface View extends android.view.View.OnFocusChangeListener {
+        void showError(CharSequence error);
     }
 
     interface ViewModel {
@@ -25,9 +24,9 @@ public interface MainMVVM {
          * Fields that are set only once in onCreate() and are never changed don't need
          * to be observable fields.
          */
-        TextWatcher getDeviceIpTextWatcher();
+        TextWatcher getIpAddressTextWatcher();
 
-        void setDeviceIpTextWatcher(TextWatcher textWatcher);
+        void setIpAddressTextWatcher(TextWatcher textWatcher);
 
         TextWatcher getPasswordTextWatcher();
 

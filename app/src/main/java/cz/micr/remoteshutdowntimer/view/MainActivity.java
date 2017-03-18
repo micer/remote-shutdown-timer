@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,6 +27,7 @@ public class MainActivity extends BaseActivity
 
     @Inject
     MainViewModel viewModel;
+
     private ActivityMainBinding binding;
 
     @Override
@@ -34,25 +36,20 @@ public class MainActivity extends BaseActivity
         MainApplication.getInstance().getAppComponent().inject(this);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         binding.setVm(viewModel);
+        binding.setActivity(this);
 
         // setup action bar
         setSupportActionBar(binding.toolbar);
 
         // setup text watchers
-        viewModel.setDeviceIpTextWatcher(new AfterChangedTextWatcher() {
+        TextWatcher inputTextWatcher = new AfterChangedTextWatcher() {
             @Override
             public void afterTextChanged(Editable editable) {
-                Timber.d("DeviceIp text changed.");
                 viewModel.getConnectButtonEnabled().set(areInputsValid());
             }
-        });
-        viewModel.setPasswordTextWatcher(new AfterChangedTextWatcher() {
-            @Override
-            public void afterTextChanged(Editable editable) {
-                Timber.d("Password text changed.");
-                viewModel.getConnectButtonEnabled().set(areInputsValid());
-            }
-        });
+        };
+        viewModel.setIpAddressTextWatcher(inputTextWatcher);
+        viewModel.setPasswordTextWatcher(inputTextWatcher);
 
         // setup floating action button
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -94,13 +91,23 @@ public class MainActivity extends BaseActivity
         Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
     }
 
-    private boolean isDeviceIpInputValid() {
-        String text = binding.layoutContentMain.deviceIpEditText.getText().toString();
+    private boolean isIpAddressValid() {
+        String text = binding.layoutContentMain.inputIpAddress.getText().toString();
         return text.matches(Constant.Regex.IP_ADDRESS);
     }
 
+    private boolean isPasswordValid() {
+        return !binding.layoutContentMain.inputPassword.getText().toString().isEmpty();
+    }
+
     private boolean areInputsValid() {
-        return isDeviceIpInputValid() &&
-                !binding.layoutContentMain.passwordEditText.getText().toString().isEmpty();
+        return isIpAddressValid() && isPasswordValid();
+    }
+
+    @Override
+    public void onFocusChange(View view, boolean focused) {
+        if (!focused && !isIpAddressValid()) {
+            binding.layoutContentMain.inputIpAddress.setError(getString(R.string.error_invalid_format));
+        }
     }
 }

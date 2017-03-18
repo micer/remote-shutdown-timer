@@ -13,4 +13,11 @@ public class ListenerBinding {
             ((EditText) view).addTextChangedListener(textWatcher);
         }
     }
+
+    @BindingAdapter({"onFocusChange"})
+    public static void onFocusChange(View view, View.OnFocusChangeListener onFocusChangeListener) {
+        view.setFocusable(true);
+        view.setFocusableInTouchMode(true);
+        view.setOnFocusChangeListener(onFocusChangeListener);
+    }
 }
