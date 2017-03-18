@@ -10,13 +10,20 @@ import cz.micr.remoteshutdowntimer.MainMVVM;
 
 public class MainViewModel implements MainMVVM.ViewModel {
 
+    private ObservableBoolean showLoading = new ObservableBoolean(false);
     private ObservableField<String> deviceName = new ObservableField<>("");
     private ObservableField<String> deviceIpAddress = new ObservableField<>("");
     private ObservableBoolean connectButtonEnabled = new ObservableBoolean(false);
     private TextWatcher ipAddressTextWatcher;
     private TextWatcher passwordTextWatcher;
+
     @Inject
     public MainViewModel() {
+    }
+
+    @Override
+    public ObservableBoolean showLoading() {
+        return showLoading;
     }
 
     @Override

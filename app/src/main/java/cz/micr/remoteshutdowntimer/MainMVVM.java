@@ -11,9 +11,15 @@ public interface MainMVVM {
 
     interface View extends android.view.View.OnFocusChangeListener {
         void showError(CharSequence error);
+
+        void showLoading();
+
+        void hideLoading();
     }
 
     interface ViewModel {
+        ObservableBoolean showLoading();
+
         ObservableField<String> getDeviceName();
 
         ObservableField<String> getDeviceIpAddress();

@@ -2,6 +2,7 @@ package cz.micr.remoteshutdowntimer.view;
 
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.text.Editable;
@@ -41,6 +42,11 @@ public class MainActivity extends BaseActivity
         // setup action bar
         setSupportActionBar(binding.toolbar);
 
+        // setup floating action button
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(view -> Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                .setAction("Action", null).show());
+
         // setup text watchers
         TextWatcher inputTextWatcher = new AfterChangedTextWatcher() {
             @Override
@@ -51,15 +57,30 @@ public class MainActivity extends BaseActivity
         viewModel.setIpAddressTextWatcher(inputTextWatcher);
         viewModel.setPasswordTextWatcher(inputTextWatcher);
 
-        // setup floating action button
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
+        // setup click listeners
+        binding.layoutContentMain.btnConnect.setOnClickListener(view -> {
+            showLoading();
+            // TODO next action
+            CountDownTimer timer = new CountDownTimer(4000, 1000) {
+                @Override
+                public void onTick(long l) {
+
+                }
+
+                @Override
+                public void onFinish() {
+                    hideLoading();
+                }
+            };
+            timer.start();
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // setup connect button
+        viewModel.getConnectButtonEnabled().set(areInputsValid());
     }
 
     @Override
@@ -89,6 +110,18 @@ public class MainActivity extends BaseActivity
         Timber.d(error.toString());
         // TODO show error dialog
         Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void showLoading() {
+        viewModel.showLoading().set(true);
+        binding.progressBarOverlay.requestFocus();
+        hideSoftwareKeyboard();
+    }
+
+    @Override
+    public void hideLoading() {
+        viewModel.showLoading().set(false);
     }
 
     private boolean isIpAddressValid() {
