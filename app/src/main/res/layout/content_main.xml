@@ -28,19 +28,61 @@
         tools:context="cz.micr.remoteshutdowntimer.view.MainActivity"
         tools:showIn="@layout/activity_main">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="1">
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/input_layout_host"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/input_host"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:hint="@string/host"
+                    android:inputType="text"
+                    app:onFocusChange="@{activity}"
+                    app:onTextChange="@{vm.inputsTextWatcher}" />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/input_layout_port"
+                android:layout_width="@dimen/input_layout_port_width"
+                android:layout_height="wrap_content">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/input_port"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:hint="@string/port"
+                    android:inputType="number"
+                    android:maxLength="5"
+                    app:onFocusChange="@{activity}"
+                    app:onTextChange="@{vm.inputsTextWatcher}" />
+
+
+            </android.support.design.widget.TextInputLayout>
+        </LinearLayout>
+
         <android.support.design.widget.TextInputLayout
-            android:id="@+id/input_layout_ip_address"
+            android:id="@+id/input_layout_username"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <android.support.design.widget.TextInputEditText
-                android:id="@+id/input_ip_address"
+                android:id="@+id/input_username"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:hint="@string/deviceIpAddress"
+                android:hint="@string/user_name"
                 android:inputType="text"
                 app:onFocusChange="@{activity}"
-                app:onTextChange="@{vm.ipAddressTextWatcher}" />
+                app:onTextChange="@{vm.inputsTextWatcher}" />
 
         </android.support.design.widget.TextInputLayout>
 
@@ -56,18 +98,16 @@
                 android:hint="@string/password"
                 android:inputType="textPassword"
                 app:onFocusChange="@{activity}"
-                app:onTextChange="@{vm.passwordTextWatcher}" />
+                app:onTextChange="@{vm.inputsTextWatcher}" />
 
         </android.support.design.widget.TextInputLayout>
 
         <Button
-            android:id="@+id/btn_connect"
+            android:id="@+id/btn_test_and_save"
             style="@style/Widget.AppCompat.Button.Colored"
             android:layout_width="match_parent"
             android:layout_height="@dimen/button_default_height"
-            android:enabled="@{vm.connectButtonEnabled}"
-            android:text="@string/connect">
-
-        </Button>
+            android:enabled="@{vm.saveButtonEnabled}"
+            android:text="@string/test_and_save" />
     </LinearLayout>
 </layout>

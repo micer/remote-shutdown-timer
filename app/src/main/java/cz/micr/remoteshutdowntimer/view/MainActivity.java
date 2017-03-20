@@ -6,10 +6,10 @@ import android.os.CountDownTimer;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import javax.inject.Inject;
@@ -18,6 +18,7 @@ import cz.micr.remoteshutdowntimer.MainApplication;
 import cz.micr.remoteshutdowntimer.MainMVVM;
 import cz.micr.remoteshutdowntimer.R;
 import cz.micr.remoteshutdowntimer.databinding.ActivityMainBinding;
+import cz.micr.remoteshutdowntimer.model.ConnectionInfo;
 import cz.micr.remoteshutdowntimer.util.AfterChangedTextWatcher;
 import cz.micr.remoteshutdowntimer.util.Constant;
 import cz.micr.remoteshutdowntimer.viewmodel.MainViewModel;
@@ -48,17 +49,15 @@ public class MainActivity extends BaseActivity
                 .setAction("Action", null).show());
 
         // setup text watchers
-        TextWatcher inputTextWatcher = new AfterChangedTextWatcher() {
+        viewModel.setInputsTextWatcher(new AfterChangedTextWatcher() {
             @Override
             public void afterTextChanged(Editable editable) {
-                viewModel.getConnectButtonEnabled().set(areInputsValid());
+                viewModel.getSaveButtonEnabled().set(validateInputs());
             }
-        };
-        viewModel.setIpAddressTextWatcher(inputTextWatcher);
-        viewModel.setPasswordTextWatcher(inputTextWatcher);
+        });
 
         // setup click listeners
-        binding.layoutContentMain.btnConnect.setOnClickListener(view -> {
+        binding.layoutContentMain.btnTestAndSave.setOnClickListener(view -> {
             showLoading();
             // TODO next action
             CountDownTimer timer = new CountDownTimer(4000, 1000) {
@@ -74,13 +73,24 @@ public class MainActivity extends BaseActivity
             };
             timer.start();
         });
+
+        // FIXME remove dummy data
+        ConnectionInfo info = new ConnectionInfo(
+                "192.168.1.38",
+                22,
+                "micer",
+                "12345");
+        binding.layoutContentMain.inputHost.setText(info.getHost());
+        binding.layoutContentMain.inputPort.setText(String.valueOf(info.getPort()));
+        binding.layoutContentMain.inputUsername.setText(info.getUsername());
+        binding.layoutContentMain.inputPassword.setText(info.getPassword());
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        // setup connect button
-        viewModel.getConnectButtonEnabled().set(areInputsValid());
+        // setup save button
+        viewModel.getSaveButtonEnabled().set(validateInputs());
     }
 
     @Override
@@ -124,23 +134,58 @@ public class MainActivity extends BaseActivity
         viewModel.showLoading().set(false);
     }
 
-    private boolean isIpAddressValid() {
-        String text = binding.layoutContentMain.inputIpAddress.getText().toString();
-        return text.matches(Constant.Regex.IP_ADDRESS);
+    private boolean validateHost() {
+        EditText inputHost = binding.layoutContentMain.inputHost;
+        String host = inputHost.getText().toString();
+        if (host.isEmpty()) {
+            inputHost.setError(getString(R.string.error_required_value));
+            return false;
+        } else if (!host.matches(Constant.Regex.IP_ADDRESS)) { // TODO validate text format
+            inputHost.setError(getString(R.string.error_invalid_format));
+            return false;
+        }
+        return true;
     }
 
-    private boolean isPasswordValid() {
-        return !binding.layoutContentMain.inputPassword.getText().toString().isEmpty();
+    private boolean validatePort() {
+        EditText inputPort = binding.layoutContentMain.inputPort;
+        if (inputPort.getText().toString().isEmpty()) {
+            inputPort.setError(getString(R.string.error_required_value));
+            return false;
+        }
+        return true;
     }
 
-    private boolean areInputsValid() {
-        return isIpAddressValid() && isPasswordValid();
+    private boolean validateUsername() {
+        EditText inputUsername = binding.layoutContentMain.inputUsername;
+        if (inputUsername.getText().toString().isEmpty()) {
+            inputUsername.setError(getString(R.string.error_required_value));
+            return false;
+        }
+        return true;
+    }
+
+    private boolean validatePassword() {
+        EditText inputPassword = binding.layoutContentMain.inputPassword;
+        if (inputPassword.getText().toString().isEmpty()) {
+            inputPassword.setError(getString(R.string.error_required_value));
+            return false;
+        }
+        return true;
+    }
+
+    private boolean validateInputs() {
+        return validateHost()
+                && validatePort()
+                && validateUsername()
+                && validatePassword();
     }
 
     @Override
-    public void onFocusChange(View view, boolean focused) {
-        if (!focused && !isIpAddressValid()) {
-            binding.layoutContentMain.inputIpAddress.setError(getString(R.string.error_invalid_format));
+    public void onFocusChange(View view, boolean hasFocus) {
+        Timber.d("focus changed to %1$b on %2$s", hasFocus, view.getResources().getResourceName(view.getId()));
+        if (!hasFocus) {
+            validateInputs();
         }
     }
 }
