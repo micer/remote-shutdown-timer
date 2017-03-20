@@ -11,13 +11,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import cz.micr.remoteshutdowntimer.model.ConnectionInfo;
+
 public class SshConnectionManager {
 
     private static Session session;
     private static ChannelShell channel;
-    private static String username = "micer";
-    private static String password = "1234";
-    private static String hostname = "192.168.1.141";
+    private static String username = "";
+    private static String password = "";
+    private static String hostname = "";
 
 
     private static Session getSession() {
@@ -139,7 +141,12 @@ public class SshConnectionManager {
         System.out.println("Disconnected channel and session");
     }
 
-    public static void executeShutdownNow() {
+    public static void executeShutdown(ConnectionInfo connectionInfo, int timeInMinutes) {
+
+        hostname = connectionInfo.getHost();
+        username = connectionInfo.getUsername();
+        password = connectionInfo.getPassword();
+
 
         try {
             Channel channel = getChannel();
@@ -150,10 +157,15 @@ public class SshConnectionManager {
                 PrintStream out = new PrintStream(channel.getOutputStream());
 
                 out.println("#!/bin/bash");
-                out.println("sudo shutdown -s now");
+                if (timeInMinutes < 1) {
+                    out.println("sudo shutdown -s now");
+                } else {
+                    out.println("sudo shutdown -s " + timeInMinutes);
+                }
                 Thread.sleep(2000);
                 out.println((password));
                 Thread.sleep(2000);
+                channel.sendSignal("2"); // sends (CTRL+C) signal
                 out.println("exit");
 
                 out.flush();

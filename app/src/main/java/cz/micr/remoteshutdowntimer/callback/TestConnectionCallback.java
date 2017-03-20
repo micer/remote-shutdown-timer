@@ -1,6 +1,6 @@
 package cz.micr.remoteshutdowntimer.callback;
 
-public interface DeviceConnectionCallback {
+public interface TestConnectionCallback {
 
     void onConnectionSuccess();
 
