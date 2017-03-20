@@ -37,7 +37,7 @@
                 android:id="@+id/input_ip_address"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:hint="@string/deviceIpAddress"
+                android:hint="@string/address"
                 android:inputType="text"
                 app:onFocusChange="@{activity}"
                 app:onTextChange="@{vm.ipAddressTextWatcher}" />

@@ -2,7 +2,6 @@ package cz.micr.remoteshutdowntimer.view;
 
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.text.Editable;
@@ -18,6 +17,7 @@ import cz.micr.remoteshutdowntimer.MainApplication;
 import cz.micr.remoteshutdowntimer.MainMVVM;
 import cz.micr.remoteshutdowntimer.R;
 import cz.micr.remoteshutdowntimer.databinding.ActivityMainBinding;
+import cz.micr.remoteshutdowntimer.model.HostInfo;
 import cz.micr.remoteshutdowntimer.util.AfterChangedTextWatcher;
 import cz.micr.remoteshutdowntimer.util.Constant;
 import cz.micr.remoteshutdowntimer.viewmodel.MainViewModel;
@@ -60,20 +60,17 @@ public class MainActivity extends BaseActivity
         // setup click listeners
         binding.layoutContentMain.btnConnect.setOnClickListener(view -> {
             showLoading();
-            // TODO next action
-            CountDownTimer timer = new CountDownTimer(4000, 1000) {
-                @Override
-                public void onTick(long l) {
-
-                }
-
-                @Override
-                public void onFinish() {
-                    hideLoading();
-                }
-            };
-            timer.start();
+            HostInfo hostInfo = new HostInfo();
+            hostInfo.setName("name");
+            hostInfo.setAddress("192.168.1.141");
+            hostInfo.setUsername("micer");
+            hostInfo.setPassword("1234");
+            viewModel.connectToDevice(hostInfo, this);
         });
+
+        // FIXME remove, debug only
+        binding.layoutContentMain.inputIpAddress.setText("192.168.1.141");
+        binding.layoutContentMain.inputPassword.setText("1234");
     }
 
     @Override
@@ -142,5 +139,21 @@ public class MainActivity extends BaseActivity
         if (!focused && !isIpAddressValid()) {
             binding.layoutContentMain.inputIpAddress.setError(getString(R.string.error_invalid_format));
         }
+    }
+
+    @Override
+    public void onConnectionSuccess() {
+        runOnUiThread(() -> {
+            hideLoading();
+            Timber.d("CONNECTED!");
+        });
+    }
+
+    @Override
+    public void onConnectionError(String error) {
+        runOnUiThread(() -> {
+            hideLoading();
+            showError("Connection error");
+        });
     }
 }

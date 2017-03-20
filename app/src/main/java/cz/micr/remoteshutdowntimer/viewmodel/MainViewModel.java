@@ -7,8 +7,14 @@ import android.text.TextWatcher;
 import javax.inject.Inject;
 
 import cz.micr.remoteshutdowntimer.MainMVVM;
+import cz.micr.remoteshutdowntimer.callback.DeviceConnectionCallback;
+import cz.micr.remoteshutdowntimer.model.HostInfo;
+import cz.micr.remoteshutdowntimer.model.MainModel;
 
 public class MainViewModel implements MainMVVM.ViewModel {
+
+    @Inject
+    MainModel model;
 
     private ObservableBoolean showLoading = new ObservableBoolean(false);
     private ObservableField<String> deviceName = new ObservableField<>("");
@@ -59,5 +65,12 @@ public class MainViewModel implements MainMVVM.ViewModel {
     @Override
     public void setPasswordTextWatcher(TextWatcher textWatcher) {
         passwordTextWatcher = textWatcher;
+    }
+
+    @Override
+    public void connectToDevice(HostInfo hostInfo, DeviceConnectionCallback callback) {
+        new Thread(() -> {
+            model.connectToDevice(hostInfo, callback);
+        }).start();
     }
 }

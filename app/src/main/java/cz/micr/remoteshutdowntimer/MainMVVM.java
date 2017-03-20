@@ -4,12 +4,17 @@ import android.databinding.ObservableBoolean;
 import android.databinding.ObservableField;
 import android.text.TextWatcher;
 
+import cz.micr.remoteshutdowntimer.callback.DeviceConnectionCallback;
+import cz.micr.remoteshutdowntimer.model.HostInfo;
+
 public interface MainMVVM {
 
     interface Model {
+        void connectToDevice(HostInfo hostInfo, DeviceConnectionCallback callback);
     }
 
-    interface View extends android.view.View.OnFocusChangeListener {
+    interface View extends android.view.View.OnFocusChangeListener,
+            DeviceConnectionCallback {
         void showError(CharSequence error);
 
         void showLoading();
@@ -37,6 +42,12 @@ public interface MainMVVM {
         TextWatcher getPasswordTextWatcher();
 
         void setPasswordTextWatcher(TextWatcher textWatcher);
+
+
+        /**
+         * Actions.
+         */
+        void connectToDevice(HostInfo hostInfo, DeviceConnectionCallback callback);
     }
 
 }
