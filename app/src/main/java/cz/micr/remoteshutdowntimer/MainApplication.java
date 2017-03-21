@@ -21,16 +21,21 @@ public class MainApplication extends Application {
 
     private ApplicationComponent appComponent;
 
+    public static MainApplication getInstance() {
+        return instance;
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
         instance = this;
 
         // Dagger dependency injection
-        appComponent = DaggerApplicationComponent.builder().
-                androidModule(new AndroidModule(this))
-                .build();
-        appComponent.inject(this);
+        if (appComponent == null) {
+            appComponent = DaggerApplicationComponent.builder()
+                    .androidModule(new AndroidModule(this))
+                    .build();
+        }
 
         // initialize Timber
         if (BuildConfig.DEBUG) {
@@ -40,12 +45,12 @@ public class MainApplication extends Application {
         }
     }
 
-    public static MainApplication getInstance() {
-        return instance;
-    }
-
     public ApplicationComponent getAppComponent() {
         return appComponent;
+    }
+
+    public void setAppComponent(ApplicationComponent appComponent) {
+        this.appComponent = appComponent;
     }
 
     /**

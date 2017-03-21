@@ -1,8 +1,9 @@
-package cz.micr.remoteshutdowntimer.view;
+package cz.micr.remoteshutdowntimer.view.activity;
 
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.text.Editable;
@@ -12,30 +13,25 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import javax.inject.Inject;
-
-import cz.micr.remoteshutdowntimer.MainApplication;
 import cz.micr.remoteshutdowntimer.MainMVVM;
 import cz.micr.remoteshutdowntimer.R;
 import cz.micr.remoteshutdowntimer.databinding.ActivityMainBinding;
 import cz.micr.remoteshutdowntimer.model.ConnectionInfo;
 import cz.micr.remoteshutdowntimer.util.AfterChangedTextWatcher;
 import cz.micr.remoteshutdowntimer.util.Constant;
+import cz.micr.remoteshutdowntimer.viewmodel.BaseViewModel;
 import cz.micr.remoteshutdowntimer.viewmodel.MainViewModel;
 import timber.log.Timber;
 
 public class MainActivity extends BaseActivity
         implements MainMVVM.View {
 
-    @Inject
-    MainViewModel viewModel;
-
+    private MainViewModel viewModel;
     private ActivityMainBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        MainApplication.getInstance().getAppComponent().inject(this);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         binding.setVm(viewModel);
         binding.setActivity(this);
@@ -84,6 +80,14 @@ public class MainActivity extends BaseActivity
         binding.layoutContentMain.inputPort.setText(String.valueOf(info.getPort()));
         binding.layoutContentMain.inputUsername.setText(info.getUsername());
         binding.layoutContentMain.inputPassword.setText(info.getPassword());
+    }
+
+    @Nullable
+    @Override
+    protected BaseViewModel createViewModel(@Nullable BaseViewModel.State savedViewModelState) {
+        viewModel = viewModelFactory.createMainViewModel(getActivityComponent(),
+                savedViewModelState);
+        return viewModel;
     }
 
     @Override
